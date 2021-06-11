@@ -256,7 +256,7 @@ IOReturn IGFX::DPCDMaxLinkRateFix::wrapReadAUX(uint32_t address, void *buffer, u
 	}
 	
 	// All done
-	DBGLOG("igfx", "MLR: [COMM] wrapReadAUX() Maximum link rate 0x%02x has been set in the DPCD buffer.", caps->maxLinkRate);
+	PANIC("igfx", "MLR: [COMM] wrapReadAUX() Maximum link rate 0x%02x has been set in the DPCD buffer.", caps->maxLinkRate);
 	return retVal;
 }
 
