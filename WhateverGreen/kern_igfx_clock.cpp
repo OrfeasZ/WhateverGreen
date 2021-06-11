@@ -101,6 +101,8 @@ void IGFX::DPCDMaxLinkRateFix::init() {
 	requiresPatchingGraphics = false;
 	requiresPatchingFramebuffer = true;
 	requiresGlobalFramebufferControllersAccess = true;
+
+	PANIC("igfx", "Does this even happen?");
 }
 
 void IGFX::DPCDMaxLinkRateFix::processKernel(KernelPatcher &patcher, DeviceInfo *info) {
