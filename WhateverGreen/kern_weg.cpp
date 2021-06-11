@@ -93,6 +93,8 @@ WEG *WEG::callbackWEG;
 void WEG::init() {
 	callbackWEG = this;
 
+	PANIC("weg", "Starting whatevergreen");
+
 	// Background init fix is only necessary on 10.10 and newer.
 	// Former boot-arg name is igfxrst.
 	if (getKernelVersion() >= KernelVersion::Yosemite) {
