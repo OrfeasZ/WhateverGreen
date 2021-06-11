@@ -155,7 +155,7 @@ void IGFX::DPCDMaxLinkRateFix::processFramebufferKextForCFL(KernelPatcher &patch
 	if (patcher.routeMultiple(index, &request, 1, address, size))
 		DBGLOG("igfx", "MLR: [CFL-] Functions have been routed successfully.");
 	else
-		SYSLOG("igfx", "MLR: [CFL-] Failed to route functions.");
+		PANIC("igfx", "MLR: [CFL-] Failed to route functions.");
 }
 
 void IGFX::DPCDMaxLinkRateFix::processFramebufferKext(KernelPatcher &patcher, size_t index, mach_vm_address_t address, size_t size) {
@@ -219,8 +219,9 @@ IOReturn IGFX::DPCDMaxLinkRateFix::wrapReadAUX(uint32_t address, void *buffer, u
 
 	// Guard: Check the DPCD register address
 	// The first 16 fields of the receiver capabilities reside at 0x0 (DPCD Register Address)
-	if (address != DPCD_DEFAULT_RECEIVER_CAPS_ADDRESS && address != DPCD_EXTENDED_RECEIVER_CAPS_ADDRESS)
+	if (address != DPCD_DEFAULT_RECEIVER_CAPS_ADDRESS && address != DPCD_EXTENDED_RECEIVER_CAPS_ADDRESS) {
 		return retVal;
+    }
 
 	// The driver tries to read the first 16 bytes from DPCD (0x0000) or extended DPCD (0x2200)
 	// Get the current framebuffer index (An UInt32 field at 0x1dc in a framebuffer instance)
@@ -228,15 +229,16 @@ IOReturn IGFX::DPCDMaxLinkRateFix::wrapReadAUX(uint32_t address, void *buffer, u
 	uint32_t index;
 	// Guard: Should be able to retrieve the index from the registry
 	if (!callbackIGFX->modDPCDMaxLinkRateFix.getFramebufferIndex(index)) {
-		SYSLOG("igfx", "MLR: [COMM] wrapReadAUX() Failed to read the current framebuffer index.");
+		PANIC("igfx", "MLR: [COMM] wrapReadAUX() Failed to read the current framebuffer index (%x).", address);
 		return retVal;
 	}
 
 	// Guard: Check the framebuffer index
 	// By default, FB 0 refers to the builtin display
-	if (index != 0)
+	if (index != 0) {
 		// The driver is reading DPCD for an external display
 		return retVal;
+    }
 
 	// The driver tries to read the receiver capabilities for the builtin display
 	auto caps = reinterpret_cast<DPCDCap16*>(buffer);
